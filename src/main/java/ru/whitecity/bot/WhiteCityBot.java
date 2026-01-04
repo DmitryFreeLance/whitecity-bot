@@ -152,7 +152,7 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
 
         SendMessage sm = baseHtml(chatId, text);
         sm.setReplyMarkup(oneColumnKeyboard(List.of(
-                cbBtn("🏁 Вернуться в меню", CB_BACK_MENU)
+                cbBtn("\uD83C\uDFE0 Вернуться в меню", CB_BACK_MENU)
         )));
         execute(sm);
     }
@@ -167,8 +167,8 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
         sm.setReplyMarkup(oneColumnKeyboard(List.of(
                 cbBtn("💰 Стоимость услуг", CB_FAQ_PRICE),
                 cbBtn("🏙️ Города присутствия", CB_FAQ_CITIES),
-                cbBtn("🏠 Как продаём объекты", CB_FAQ_SELL),
-                cbBtn("🏁 В начальное меню", CB_BACK_MENU)
+                cbBtn("\uD83C\uDF06 Как продаём объекты", CB_FAQ_SELL),
+                cbBtn("\uD83C\uDFE0 Вернуться в меню", CB_BACK_MENU)
         )));
         execute(sm);
     }
@@ -186,7 +186,7 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
         SendMessage sm = baseHtml(chatId, text);
         sm.setReplyMarkup(oneColumnKeyboard(List.of(
                 cbBtn("⬅️ Назад", CB_BACK_FAQ),
-                cbBtn("🏁 В меню", CB_BACK_MENU)
+                cbBtn("\uD83C\uDFE0 Вернуться в меню", CB_BACK_MENU)
         )));
         execute(sm);
     }
@@ -204,7 +204,7 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
         SendMessage sm = baseHtml(chatId, text);
         sm.setReplyMarkup(oneColumnKeyboard(List.of(
                 cbBtn("⬅️ Назад", CB_BACK_FAQ),
-                cbBtn("🏁 В меню", CB_BACK_MENU)
+                cbBtn("\uD83C\uDFE0 Вернуться в меню", CB_BACK_MENU)
         )));
         execute(sm);
     }
@@ -229,7 +229,7 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
         SendMessage sm = baseHtml(chatId, text);
         sm.setReplyMarkup(oneColumnKeyboard(List.of(
                 cbBtn("⬅️ Назад", CB_BACK_FAQ),
-                cbBtn("🏁 В меню", CB_BACK_MENU)
+                cbBtn("\uD83C\uDFE0 Вернуться в меню", CB_BACK_MENU)
         )));
         execute(sm);
     }
@@ -245,9 +245,9 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
         // ТЕПЕРЬ: один столбец (каждая кнопка в своей строке)
         return oneColumnKeyboard(List.of(
                 urlBtn("📩 Связаться", "https://t.me/viktorpeshekhonov"),
-                cbBtn("🏢 Агентство", CB_AGENCY),
-                cbBtn("📚 Каталог", CB_CATALOG),
-                cbBtn("❓ Вопросы", CB_FAQ)
+                cbBtn("🏢 Агентство «БЕЛЫЙ ГОРОД»", CB_AGENCY),
+                cbBtn("📚 Каталог недвижимости", CB_CATALOG),
+                cbBtn("❓ Частые вопросы", CB_FAQ)
         ));
     }
 

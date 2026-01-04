@@ -11,6 +11,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public final class WhiteCityBot extends TelegramLongPollingBot {
@@ -90,30 +91,30 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
     // ======= Start screen (strictly with photo) =======
 
     private void sendStart(Long chatId, User u) throws TelegramApiException, IOException {
-        String username = displayName(u);
+        String username = displayName(u); // теперь это ИМЯ, а не @username
 
         String text = """
                 👋 <b>Приветствую Вас, %s!</b>
 
-                🏙️ Планируете купить самый привлекательный и ликвидный объект недвижимости?
+                🏙️ <b>Планируете купить</b> самый привлекательный и ликвидный объект недвижимости?
                 <b>Вы по адресу!</b>
 
-                💼 Необходимо максимально дорого и быстро продать квартиру, апартамент или коммерческую недвижимость?
+                💼 <b>Необходимо</b> максимально дорого и быстро <b>продать</b> квартиру, апартамент или коммерческую недвижимость?
                 <b>Вы по адресу!</b>
 
                 👤 <b>Виктор Пешехонов:</b>
-                <b>Основатель Агентства</b> недвижимости <i>"Белый город"</i> — Ваш надёжный партнёр! 🤝
+                <b>Основатель Агентства</b> недвижимости <i>"Белый город"</i> — Ваш надёжный партнёр!
 
-                🧭 Знаем все проекты и жилые комплексы, спец. предложения и рассрочки.
+                🧭 <b>Знаем все проекты</b> и жилые комплексы, спец. предложения и рассрочки.
 
-                💎 <b>Лучшие варианты</b> для инвестиций и сохранения семейного капитала уже ждут вас!
+                💎 <b>Лучшие варианты для инвестиций</b> и сохранения семейного капитала уже ждут вас!
                 """.formatted(escape(username));
 
         SendPhoto sp = new SendPhoto();
         sp.setChatId(chatId.toString());
         sp.setCaption(text);
         sp.setParseMode(ParseMode.HTML);
-        sp.setReplyMarkup(mainMenuKeyboard());
+        sp.setReplyMarkup(mainMenuKeyboard()); // теперь столбец
         sp.setPhoto(loadPhotoFromResources("1.jpg"));
 
         execute(sp);
@@ -123,10 +124,8 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
 
     private void sendAgency(Long chatId) throws TelegramApiException {
         String text = """
-                🏢 <b>Агентство «БЕЛЫЙ ГОРОД»</b>
-
                 <b>«БЕЛЫЙ ГОРОД»</b>
-                <b>Верный и грамотный партнёр в любых сделках с недвижимостью!</b> ✅
+                <b>Верный и грамотный партнёр в любых сделках с недвижимостью!</b>
 
                 🤝 Наша задача — сократить расстояние между покупателем и продавцом, помочь клиентам оперативно и без рисков продать, купить, сдать и снять недвижимость.
                 🧩 Мы предлагаем готовые решения и сопровождаем на каждом этапе.
@@ -135,7 +134,7 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
                 """;
 
         SendMessage sm = baseHtml(chatId, text);
-        sm.setReplyMarkup(oneRowKeyboard(List.of(
+        sm.setReplyMarkup(oneColumnKeyboard(List.of(
                 urlBtn("👤 Связаться с Руководителем", "https://t.me/viktorpeshekhonov"),
                 cbBtn("🏁 Вернуться в меню", CB_BACK_MENU)
         )));
@@ -144,7 +143,7 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
 
     private void sendCatalog(Long chatId) throws TelegramApiException {
         String text = """
-                📚 <b>Каталог недвижимости</b>
+                <b>Каталог недвижимости</b>
 
                 🏙️ <a href="https://drive.google.com/file/d/16FWw9skGQl9Y0WN4PSLohgtO2mU-K9jJ/view?usp=drive_link">Каталог новостроек Москвы</a>
                 🏢 <a href="https://drive.google.com/file/d/1bn4tNRqHE8Xyk1Fotq_GMJ1K0Hfj_w3U/view?usp=drive_link">Каталог бизнес-центров Москвы</a>
@@ -152,7 +151,7 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
                 """;
 
         SendMessage sm = baseHtml(chatId, text);
-        sm.setReplyMarkup(oneRowKeyboard(List.of(
+        sm.setReplyMarkup(oneColumnKeyboard(List.of(
                 cbBtn("🏁 Вернуться в меню", CB_BACK_MENU)
         )));
         execute(sm);
@@ -165,27 +164,27 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
                 """;
 
         SendMessage sm = baseHtml(chatId, text);
-        sm.setReplyMarkup(oneRowKeyboard(List.of(
+        sm.setReplyMarkup(oneColumnKeyboard(List.of(
                 cbBtn("💰 Стоимость услуг", CB_FAQ_PRICE),
-                cbBtn("🏙️ Города", CB_FAQ_CITIES),
-                cbBtn("🏠 Как продаём", CB_FAQ_SELL),
-                cbBtn("🏁 В меню", CB_BACK_MENU)
+                cbBtn("🏙️ Города присутствия", CB_FAQ_CITIES),
+                cbBtn("🏠 Как продаём объекты", CB_FAQ_SELL),
+                cbBtn("🏁 В начальное меню", CB_BACK_MENU)
         )));
         execute(sm);
     }
 
     private void sendFaqPrice(Long chatId) throws TelegramApiException {
         String text = """
-                💰 <b>Какая стоимость ваших услуг?</b>
+                <b>Какая стоимость ваших услуг?</b>
 
                 ✅ Всё индивидуально, в зависимости от сложности сделки, специфики объекта, региона.
                 📌 Но есть и стандартная комиссия — <b>2% от цены объекта</b> ИЛИ <b>фиксированная сумма + %</b>.
 
-                👛 Все наши услуги оплачивает продавец.
+                Все наши услуги оплачивает продавец.
                 """;
 
         SendMessage sm = baseHtml(chatId, text);
-        sm.setReplyMarkup(oneRowKeyboard(List.of(
+        sm.setReplyMarkup(oneColumnKeyboard(List.of(
                 cbBtn("⬅️ Назад", CB_BACK_FAQ),
                 cbBtn("🏁 В меню", CB_BACK_MENU)
         )));
@@ -194,7 +193,7 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
 
     private void sendFaqCities(Long chatId) throws TelegramApiException {
         String text = """
-                🏙️ <b>А в каких городах вы работаете?</b>
+                <b>А в каких городах вы работаете?</b>
 
                 🇷🇺 Города присутствия в России: <b>Нижний Новгород, Москва, Сочи, Санкт — Петербург</b>.
                 🌍 В других регионах страны и Мира — подключаем наших проверенных партнёров.
@@ -203,7 +202,7 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
                 """;
 
         SendMessage sm = baseHtml(chatId, text);
-        sm.setReplyMarkup(oneRowKeyboard(List.of(
+        sm.setReplyMarkup(oneColumnKeyboard(List.of(
                 cbBtn("⬅️ Назад", CB_BACK_FAQ),
                 cbBtn("🏁 В меню", CB_BACK_MENU)
         )));
@@ -212,23 +211,23 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
 
     private void sendFaqSell(Long chatId) throws TelegramApiException {
         String text = """
-                🏠 <b>Как вы продаёте недвижимость?</b>
+                <b>Как вы продаёте недвижимость?</b>
 
-                📞 Сперва — телефонный звонок: общие вопросы — ответы, затем встреча на объекте.
-                🔎 Далее проводим осмотр и оценку.
-                🎥 Делаем красивые фото и видео.
-                🚀 И только после начинаем маркетинговую поддержку с мощной рекламной кампанией, где используем:
-                • 📱 Социальные сети;
-                • 📍 Геолокационные сервисы;
-                • 🎯 Контекстную рекламу;
-                • 🌐 Все популярные интернет-ресурсы;
-                • 🏦 Дополнительно банки-партнёры активно предлагают наши объекты.
+                Сперва — телефонный звонок: общие вопросы — ответы, затем встреча на объекте.
+                Далее проводим осмотр и оценку.
+                Делаем красивые фото и видео.
+                И только после начинаем маркетинговую поддержку с мощной рекламной кампанией, где используем:
+                 📱 Социальные сети;
+                 📍 Геолокационные сервисы;
+                 🎯 Контекстную рекламу;
+                 🌐 Все популярные интернет-ресурсы;
+                 🏦 Дополнительно банки-партнёры активно предлагают наши объекты.
 
                 🧑‍💻 А для эксклюзивных объектов создаём сайты-одностраничники.
                 """;
 
         SendMessage sm = baseHtml(chatId, text);
-        sm.setReplyMarkup(oneRowKeyboard(List.of(
+        sm.setReplyMarkup(oneColumnKeyboard(List.of(
                 cbBtn("⬅️ Назад", CB_BACK_FAQ),
                 cbBtn("🏁 В меню", CB_BACK_MENU)
         )));
@@ -243,8 +242,8 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
     // ======= Keyboards =======
 
     private InlineKeyboardMarkup mainMenuKeyboard() {
-        // ОДНА строка: 4 кнопки
-        return oneRowKeyboard(List.of(
+        // ТЕПЕРЬ: один столбец (каждая кнопка в своей строке)
+        return oneColumnKeyboard(List.of(
                 urlBtn("📩 Связаться", "https://t.me/viktorpeshekhonov"),
                 cbBtn("🏢 Агентство", CB_AGENCY),
                 cbBtn("📚 Каталог", CB_CATALOG),
@@ -252,9 +251,15 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
         ));
     }
 
-    private InlineKeyboardMarkup oneRowKeyboard(List<InlineKeyboardButton> buttons) {
+    private InlineKeyboardMarkup oneColumnKeyboard(List<InlineKeyboardButton> buttons) {
         InlineKeyboardMarkup m = new InlineKeyboardMarkup();
-        m.setKeyboard(List.of(buttons)); // одна строка
+
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+        for (InlineKeyboardButton b : buttons) {
+            rows.add(List.of(b)); // каждая кнопка — отдельная строка
+        }
+
+        m.setKeyboard(rows);
         return m;
     }
 
@@ -292,9 +297,22 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
     }
 
     private static String displayName(User u) {
-        // приоритет: @username, иначе имя
-        if (u.getUserName() != null && !u.getUserName().isBlank()) return "@" + u.getUserName();
-        if (u.getFirstName() != null && !u.getFirstName().isBlank()) return u.getFirstName();
+        // приоритет: Имя + Фамилия (если есть), иначе username БЕЗ @, иначе "друг"
+        String first = u.getFirstName();
+        String last = u.getLastName();
+
+        boolean hasFirst = first != null && !first.isBlank();
+        boolean hasLast = last != null && !last.isBlank();
+
+        if (hasFirst) {
+            return hasLast ? (first + " " + last) : first;
+        }
+
+        String username = u.getUserName();
+        if (username != null && !username.isBlank()) {
+            return username; // без "@"
+        }
+
         return "друг";
     }
 

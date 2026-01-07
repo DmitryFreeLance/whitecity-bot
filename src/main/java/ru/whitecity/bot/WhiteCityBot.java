@@ -7,8 +7,8 @@ import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.*;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -18,6 +18,7 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
 
     // callback data
     private static final String CB_AGENCY = "menu_agency";
+    private static final String CB_PROPERTY_MGMT = "menu_property_mgmt"; // ✅ NEW
     private static final String CB_CATALOG = "menu_catalog";
     private static final String CB_FAQ = "menu_faq";
 
@@ -27,6 +28,8 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
 
     private static final String CB_BACK_FAQ = "back_faq";
     private static final String CB_BACK_MENU = "back_menu";
+
+    private static final String CB_BACK_PROPERTY_MGMT = "back_property_mgmt"; // ✅ NEW
 
     private final BotConfig cfg;
     private final Db db;
@@ -74,6 +77,7 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
 
         switch (data) {
             case CB_AGENCY -> sendAgency(chatId);
+            case CB_PROPERTY_MGMT -> sendPropertyManagement(chatId); // ✅ NEW
             case CB_CATALOG -> sendCatalog(chatId);
             case CB_FAQ -> sendFaqMenu(chatId);
 
@@ -82,6 +86,8 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
             case CB_FAQ_SELL -> sendFaqSell(chatId);
 
             case CB_BACK_FAQ -> sendFaqMenu(chatId);
+
+            case CB_BACK_PROPERTY_MGMT -> sendStart(chatId, cq.getFrom()); // ✅ NEW (назад из NEDVIX)
             case CB_BACK_MENU -> sendStart(chatId, cq.getFrom());
 
             default -> sendUnknown(chatId);
@@ -94,7 +100,7 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
         String username = displayName(u); // теперь это ИМЯ, а не @username
 
         String text = """
-                👋 <b>Приветствую Вас, %s!</b>
+                👋 <b>Приветствую Вас!</b>
 
                 🏙️ <b>Планируете купить</b> самый привлекательный и ликвидный объект недвижимости?
                 <b>Вы по адресу!</b>
@@ -103,18 +109,18 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
                 <b>Вы по адресу!</b>
 
                 👤 <b>Виктор Пешехонов:</b>
-                <b>Основатель Агентства</b> недвижимости <i>"Белый город"</i> — Ваш надёжный партнёр!
+                <b>Основатель Агентства</b> недвижимости <i>"Белый город"</i> — Ваш надёжный партнёр и персональный советник!
 
                 🧭 <b>Знаем все проекты</b> и жилые комплексы, спец. предложения и рассрочки.
 
                 💎 <b>Лучшие варианты для инвестиций</b> и сохранения семейного капитала уже ждут вас!
-                """.formatted(escape(username));
+                """;
 
         SendPhoto sp = new SendPhoto();
         sp.setChatId(chatId.toString());
         sp.setCaption(text);
         sp.setParseMode(ParseMode.HTML);
-        sp.setReplyMarkup(mainMenuKeyboard()); // теперь столбец
+        sp.setReplyMarkup(mainMenuKeyboard());
         sp.setPhoto(loadPhotoFromResources("1.jpg"));
 
         execute(sp);
@@ -124,19 +130,37 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
 
     private void sendAgency(Long chatId) throws TelegramApiException {
         String text = """
-                <b>«БЕЛЫЙ ГОРОД»</b>
-                <b>Верный и грамотный партнёр в любых сделках с недвижимостью!</b>
-
+                <b>АН «БЕЛЫЙ ГОРОД»</b>\s
+                <b>Надёжный и годами проверенный партнёр в любых сделках с недвижимостью!</b>
+                
                 🤝 Наша задача — сократить расстояние между покупателем и продавцом, помочь клиентам оперативно и без рисков продать, купить, сдать и снять недвижимость.
                 🧩 Мы предлагаем готовые решения и сопровождаем на каждом этапе.
-
+                🏘Репутация дороже денег⏳️
+                
                 👉 <b>Сайт Агентства:</b> https://whitecity.su/
                 """;
 
         SendMessage sm = baseHtml(chatId, text);
         sm.setReplyMarkup(oneColumnKeyboard(List.of(
                 urlBtn("👤 Связаться с Руководителем", "https://t.me/viktorpeshekhonov"),
-                cbBtn("🏁 Вернуться в меню", CB_BACK_MENU)
+                cbBtn("\uD83C\uDFE0 Вернуться в меню", CB_BACK_MENU)
+        )));
+        execute(sm);
+    }
+
+    // ✅ NEW SCREEN
+    private void sendPropertyManagement(Long chatId) throws TelegramApiException {
+        String text = """
+                <b>NEDVIX – компания по доверительному управлению коммерческой недвижимостью</b>
+                Помогаем собственникам эффективно управлять арендными отношениями и получать стабильный пассивный доход от сдачи недвижимости в аренду
+
+                https://nedvix-realty.ru/?ysclid=mk2krcrhpc727403864
+                """;
+
+        SendMessage sm = baseHtml(chatId, text);
+        sm.setReplyMarkup(oneColumnKeyboard(List.of(
+                cbBtn("⬅️ Вернуться назад", CB_BACK_PROPERTY_MGMT),
+                cbBtn("\uD83C\uDFE0 Вернуться в меню", CB_BACK_MENU)
         )));
         execute(sm);
     }
@@ -242,10 +266,11 @@ public final class WhiteCityBot extends TelegramLongPollingBot {
     // ======= Keyboards =======
 
     private InlineKeyboardMarkup mainMenuKeyboard() {
-        // ТЕПЕРЬ: один столбец (каждая кнопка в своей строке)
+        // ✅ теперь 5 кнопок, новая стоит сразу после "Агентство"
         return oneColumnKeyboard(List.of(
                 urlBtn("📩 Связаться", "https://t.me/viktorpeshekhonov"),
                 cbBtn("🏢 Агентство «БЕЛЫЙ ГОРОД»", CB_AGENCY),
+                cbBtn("🏬 Управление недвижимостью", CB_PROPERTY_MGMT), // ✅ NEW
                 cbBtn("📚 Каталог недвижимости", CB_CATALOG),
                 cbBtn("❓ Частые вопросы", CB_FAQ)
         ));
